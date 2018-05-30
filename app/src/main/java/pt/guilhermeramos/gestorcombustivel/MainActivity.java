@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -57,8 +59,16 @@ public class MainActivity extends AppCompatActivity {
                 int kmI = Integer.parseInt(kmInicial.getText().toString());
                 int kmF = Integer.parseInt(kmFinal.getText().toString());
 
-                db.write("INSERT INTO viagens (descricao, kmInicial, kmFinal, pago, data) VALUES ('" + desc + "', " + kmI + ", " + kmF + ", " + (kmF - kmI) + " , CURRENT_TIMESTAMP)");
-                refreshList();
+                Date data = new Date();
+                SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+                String dateInText = format.format(data);
+
+                db.write("INSERT INTO viagens (descricao, kmInicial, kmFinal, pago, data) VALUES ('" + desc + "', " + kmI + ", " + kmF + ", " + (kmF - kmI) + " , '" + dateInText +"')");
+                try {
+                    refreshList();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         });
         pagarButton = (Button) findViewById(R.id.pagarButton);
@@ -82,11 +92,15 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         db = new DB(this);
-        refreshList();
+        try {
+            refreshList();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void refreshList() {
-        c = db.read("SELECT * FROM viagens ORDER BY data ASC");
+    private void refreshList() throws ParseException {
+        c = db.read("SELECT * FROM viagens ORDER BY data DESC");
         MainActivity context = this;
 
         lista.setAdapter(new CursorAdapter(context, c, 0) {
@@ -118,11 +132,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 ((TextView) view.findViewById(R.id.aPagarM)).setText("" + pago + " Km");
 
-                int tempomilis = cursor.getInt(cursor.getColumnIndex("data"));
-                Date data = new Date(tempomilis);
-                SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-                String dateInText = format.format(data);
-                ((TextView) view.findViewById(R.id.dataM)).setText(dateInText);
+                String data = cursor.getString(cursor.getColumnIndex("data"));
+                ((TextView) view.findViewById(R.id.dataM)).setText(data);
             }
 
         });
@@ -140,8 +151,9 @@ public class MainActivity extends AppCompatActivity {
                 total += diff;
                 aPagar += p;
 
-                int tempomilis = c.getInt(c.getColumnIndex("data"));
-                Date data = new Date(tempomilis);
+                String dataInString = c.getString(c.getColumnIndex("data"));
+                SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+                Date data = format.parse(dataInString);
 
                 Calendar cal1 = Calendar.getInstance();
                 Calendar cal2 = Calendar.getInstance();

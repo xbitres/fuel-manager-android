@@ -11,12 +11,12 @@ public class DB {
 
     private class DBHelper extends SQLiteOpenHelper {
         public DBHelper(Context context) {
-            super(context, "bdviagens", null, 2);
+            super(context, "bdviagens", null, 3);
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE viagens (_id integer primary key, descricao varchar(100), kmInicial integer, kmFinal integer, pago integer, data integer)");
+            db.execSQL("CREATE TABLE viagens (_id integer primary key, descricao varchar(100), kmInicial integer, kmFinal integer, pago integer, data text)");
         }
 
         @Override
