@@ -77,6 +77,9 @@ public class PagarActivity extends AppCompatActivity {
                             db.write("UPDATE viagens SET pago = " + pago + " WHERE _id = " + id);
                         }
 
+                        if (kms == 0)
+                            break;
+
                         c.moveToNext();
                     }
                 }
