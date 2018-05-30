@@ -97,11 +97,13 @@ public class PagarActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                double litros = 0;
                 if (s.length() > 0) {
-                    double litros = Double.parseDouble(s.toString());
-                    double kms = (litros * 100) / MainActivity.MEDIA_CARRO;
-                    textKms.setText(ceil(kms) + " Km");
+                    litros = Double.parseDouble(s.toString());
                 }
+
+                double kms = (litros * 100) / MainActivity.MEDIA_CARRO;
+                textKms.setText(ceil(kms) + " Km");
             }
 
             @Override
